@@ -1,5 +1,8 @@
 package com.ll.wiseSaying
 
+import com.ll.wiseSaying.controller.SystemController
+import com.ll.wiseSaying.controller.WiseSayingController
+
 class App {
     val wiseSayingController = WiseSayingController()
     val systemController = SystemController()

@@ -1,5 +1,6 @@
-package com.ll.wiseSaying
+package com.ll.wiseSaying.repository
 
+import com.ll.wiseSaying.WiseSaying
 import java.io.File
 
 class WiseSayingRepository{

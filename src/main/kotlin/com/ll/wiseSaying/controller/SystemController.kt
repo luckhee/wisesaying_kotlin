@@ -1,4 +1,4 @@
-package com.ll.wiseSaying
+package com.ll.wiseSaying.controller
 
 class SystemController {
     fun actionExit() {
