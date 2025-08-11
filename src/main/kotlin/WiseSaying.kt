@@ -29,6 +29,13 @@ fun main() {
             for(saying in sayings.reversed()) {
                 println("${saying.id} / ${saying.author} / ${saying.wiseSaying}")
             }
+        } else if (input.startsWith("삭제?id=")) {
+            val inputBits = input.split("=")
+            val idToDelete = inputBits[1].toIntOrNull()
+
+            sayings.removeIf{it.id == idToDelete}
+            println("${idToDelete}번 명언이 삭제되었습니다.")
+
         }
     }
 }
