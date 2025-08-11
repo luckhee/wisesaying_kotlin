@@ -43,9 +43,34 @@ fun main() {
                     println("${idToDelete}번 명언은 존재하지 않습니다.")
                 }
             }
+        } else if (input.startsWith("수정?id=")) {
+            val inputBits = input.split("=")
+            val idToModify = inputBits[1].toIntOrNull()
+
+            if(idToModify != null) {
+                val found = sayings.any { it.id == idToModify }
+
+                if(found) {
+                    val foundSaying = sayings.find { it.id == idToModify }
+                    println("명언(기존) : ${foundSaying?.wiseSaying}")
+                    println("명언 : ")
+                    var wiseSaying = readlnOrNull()!!.trim()
+                    println("작가(기존) : ${foundSaying?.author}")
+                    println("작가 :")
+                    var author = readlnOrNull()!!.trim()
+
+                    foundSaying?.wiseSaying = wiseSaying
+                    foundSaying?.author = author
+
+                } else {
+                    println("${idToModify}번 명언은 존재하지 않습니다.")
+                }
+            }
         }
     }
 }
+
+
 data class WiseSaying(var id: Int , var author: String, var wiseSaying:String){
 
 }
