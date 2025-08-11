@@ -1,22 +1,12 @@
 [
   {
-    "id": 1,
-    "content": "123123",
-    "author": "4"
-  },
-  {
     "id": 2,
-    "content": "과거에집착하지마라.",
-    "author": "작자미상"
+    "content": "현재와 자신을 사랑하라.",
+    "author": "홍길동"
   },
   {
     "id": 3,
-    "content": "123123",
-    "author": "32"
-  },
-  {
-    "id": 4,
-    "content": "123123",
-    "author": "ㄹㄴㅁ엏림ㄴ얼"
+    "content": "수정본",
+    "author": "수정본"
   }
 ]
