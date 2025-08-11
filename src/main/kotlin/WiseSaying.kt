@@ -73,12 +73,39 @@ fun main() {
                     println("${idToModify}번 명언은 존재하지 않습니다.")
                 }
             }
+        } else if (input == "빌드") {
+            buildData()
         }
     }
 }
 
 
 data class WiseSaying(var id: Int , var author: String, var wiseSaying:String){}
+
+fun buildData() {
+    val dir = File("db/wiseSaying")
+    if (!dir.exists()) {
+        dir.mkdirs()
+    }
+
+    val sayings = loadAllWiseSayings()  // 개별 파일들에서 불러오기
+
+    val json = sayings.joinToString(",\n") { saying ->
+        """  {
+    "id": ${saying.id},
+    "content": "${saying.wiseSaying}",
+    "author": "${saying.author}"
+  }"""
+    }
+
+    val finalJson = "[\n$json\n]"
+
+    // data.json 파일 생성
+    File("db/wiseSaying/data.json").writeText(finalJson)
+
+    println("data.json 파일의 내용이 갱신되었습니다.")
+}
+
 
 fun saveLastId(id : Int) {
     val dir = File("db/wiseSaying")
