@@ -77,4 +77,49 @@ class WiseSayingService {
 
         println("data.json 파일의 내용이 갱신되었습니다.")
     }
+
+    fun hasCmdParameter(cmd : String ) : Boolean{
+        if(cmd.contains("?")) return true
+        else return false
+    }
+    //목록?keywordType=content&keyword=과거
+    fun splitCmd(cmd : String):MutableList<WiseSaying> {
+        val inputBits = cmd.split("?")
+        val searchBit = inputBits[1]
+        //keywordType=content
+        val searchBits = searchBit.split("&")
+
+        val keyWordType = findKeyWordType(searchBits)
+        val keyWord = findKeyWord(searchBits)
+
+        // Service에 있는게 좀 ... 애매하네요... controller로 빼고 싶어서 메소드로 분리해봤는데 매개변수 때문에 호출이 안되네요.. 설계를 잘못한듯 ..
+        println("----------------------")
+        println("검색타입 : $keyWordType")
+        println("검색어 : $keyWord")
+        println("----------------------")
+
+
+        return if(keyWordType == "content") {
+
+            sayings.filter{it.wiseSaying.contains(keyWord)}.toMutableList()
+        } else if(keyWordType == "author") {
+            sayings.filter{it.author.contains(keyWord)}.toMutableList()
+        } else {
+            sayings.toMutableList()
+        }
+    }
+
+    fun findKeyWordType(searchBits : List<String>) : String{
+        val keyWordTypeBit = searchBits[0]
+        val keyWordTypeBits =  keyWordTypeBit.split("=")
+        val keyWordType =keyWordTypeBits[1]
+        return keyWordType
+    }
+
+    fun findKeyWord(searchBits : List<String>) : String {
+        val keyWordBit = searchBits[1]
+        val keyWordBits = keyWordBit.split("=")
+        val keyWord = keyWordBits[1]
+        return keyWord
+    }
 }

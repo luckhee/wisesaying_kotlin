@@ -19,8 +19,8 @@ class App {
             } else if (cmd == "종료") {
                 systemController.actionExit()
                 break
-            } else if (cmd == "목록") {
-                wiseSayingController.actionList()
+            } else if (cmd.startsWith("목록")) {
+                wiseSayingController.actionList(cmd)
             } else if (cmd.startsWith("삭제?id=")) {
                 wiseSayingController.actionDelete(cmd)
             } else if (cmd.startsWith("수정?id=")) {

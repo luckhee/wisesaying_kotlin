@@ -16,13 +16,32 @@ class WiseSayingController {
         println(result)
     }
 
-    fun actionList() {
-        println("번호 / 작가 / 명언")
-        println("----------------------")
-        val saings = wiseSayingService.actionList()
-        for (saying in saings.reversed()) {
-            println("${saying.id} / ${saying.author} / ${saying.wiseSaying}")
+    fun actionList(cmd : String) {
+        val result = wiseSayingService.hasCmdParameter(cmd)
+
+        if(!result) {
+            println("번호 / 작가 / 명언")
+            println("----------------------")
+            val saings = wiseSayingService.actionList()
+            for (saying in saings.reversed()) {
+                println("${saying.id} / ${saying.author} / ${saying.wiseSaying}")
+            }
+
+        } else {
+            val filterdWiseSaying = wiseSayingService.splitCmd(cmd)
+
+
+            println("번호 / 작가 / 명언")
+            println("----------------------")
+            for (saying in filterdWiseSaying.reversed()) {
+
+                println("${saying.id} / ${saying.author} / ${saying.wiseSaying}")
+            }
         }
+
+
+
+
     }
 
     fun actionDelete(cmd: String) {
@@ -50,7 +69,7 @@ class WiseSayingController {
             println(result)
         } else {
             val inputBits = cmd.split("=")
-            val id = inputBits[1].toIntOrNull() ?: 0
+            val id = inputBits[1]
             println("$id 번 명언은 존재하지 않습니다.")
         }
 

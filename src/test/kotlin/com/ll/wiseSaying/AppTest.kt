@@ -248,4 +248,54 @@ class AppTest {
         assertTrue(actualOutput.contains("프로그램을 종료합니다"),
             "Expected: '프로그램을 종료합니다' / Actual output: $actualOutput")
     }
+
+    @Test
+    fun `목록 검색 기능 테스트 - content 타입`() {
+        // given: 명언들 등록 후 content로 검색
+        val input = """
+        등록
+        현재를 사랑하라.
+        작자미상
+        등록
+        과거에 집착하지 마라.
+        작자미상
+        목록?keywordType=content&keyword=과거
+        종료
+    """.trimIndent().replace("\n", "\n")
+        System.setIn(ByteArrayInputStream(input.toByteArray()))
+
+        // when
+        val app = com.ll.wiseSaying.App()
+        app.run()
+
+        // then
+        val actualOutput = testOut.toString()
+        println("=== content 검색 테스트 실제 출력 ===")
+        println(actualOutput)
+        println("==============================")
+
+        // 등록 확인
+        assertTrue(actualOutput.contains("1 번 명언이 등록되었습니다"),
+            "Expected: '1번 명언이 등록되었습니다' / Actual output: $actualOutput")
+        assertTrue(actualOutput.contains("2 번 명언이 등록되었습니다"),
+            "Expected: '2번 명언이 등록되었습니다' / Actual output: $actualOutput")
+
+        // 검색 결과 헤더 확인
+        assertTrue(actualOutput.contains("----------------------"),
+            "Expected: '----------------------' / Actual output: $actualOutput")
+        assertTrue(actualOutput.contains("검색타입 : content"),
+            "Expected: '검색타입 : content' / Actual output: $actualOutput")
+        assertTrue(actualOutput.contains("검색어 : 과거"),
+            "Expected: '검색어 : 과거' / Actual output: $actualOutput")
+        assertTrue(actualOutput.contains("번호 / 작가 / 명언"),
+            "Expected: '번호 / 작가 / 명언' / Actual output: $actualOutput")
+
+        // 검색 결과 확인 (과거가 포함된 명언만)
+        assertTrue(actualOutput.contains("2 / 작자미상 / 과거에 집착하지 마라."),
+            "Expected: '2 / 작자미상 / 과거에 집착하지 마라.' / Actual output: $actualOutput")
+
+        // 검색되지 않아야 할 명언 확인 (현재를 사랑하라는 나오면 안됨)
+        assertFalse(actualOutput.contains("1 / 작자미상 / 현재를 사랑하라."),
+            "Expected: '현재를 사랑하라' 명언은 검색 결과에 나오면 안됨 / Actual output: $actualOutput")
+    }
 }
