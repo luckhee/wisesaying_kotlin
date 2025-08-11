@@ -33,9 +33,16 @@ fun main() {
             val inputBits = input.split("=")
             val idToDelete = inputBits[1].toIntOrNull()
 
-            sayings.removeIf{it.id == idToDelete}
-            println("${idToDelete}번 명언이 삭제되었습니다.")
+            if(idToDelete != null) {
+                val found = sayings.any { it.id == idToDelete }
 
+                if(found) {
+                    sayings.removeIf { it.id == idToDelete }
+                    println("${idToDelete}번 명언이 삭제되었습니다.")
+                } else {
+                    println("${idToDelete}번 명언은 존재하지 않습니다.")
+                }
+            }
         }
     }
 }
