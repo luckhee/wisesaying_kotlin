@@ -1,0 +1,2 @@
+public class WiseSaying {
+}
