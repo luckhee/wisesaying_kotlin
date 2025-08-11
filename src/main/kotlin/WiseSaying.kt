@@ -1,7 +1,11 @@
+import java.io.File
+
 fun main() {
     println("== 명언 앱 ==")
-    var id = 0
-    val sayings = mutableListOf<WiseSaying>()
+
+    val sayings = loadAllWiseSayings()
+    var id = sayings.maxOfOrNull { it.id } ?: 0
+
     while (true) {
         println("명령)")
         var input = readlnOrNull()!!.trim()
@@ -18,6 +22,8 @@ fun main() {
 
             val newSaying = WiseSaying(id, author, wiseSaying)
             sayings.add(newSaying)
+            saveWiseSaying(newSaying)
+            saveLastId(id)
 
             println("$id 번 명언이 등록되었습니다.")
         } else if (input == "종료") {
@@ -38,6 +44,7 @@ fun main() {
 
                 if(found) {
                     sayings.removeIf { it.id == idToDelete }
+                    deleteWiseSaying(idToDelete)
                     println("${idToDelete}번 명언이 삭제되었습니다.")
                 } else {
                     println("${idToDelete}번 명언은 존재하지 않습니다.")
@@ -71,6 +78,70 @@ fun main() {
 }
 
 
-data class WiseSaying(var id: Int , var author: String, var wiseSaying:String){
+data class WiseSaying(var id: Int , var author: String, var wiseSaying:String){}
 
+fun saveLastId(id : Int) {
+    val dir = File("db/wiseSaying")
+    if (!dir.exists()) {
+        dir.mkdirs()
+    }
+
+    File("db/wiseSaying/lastId.txt").writeText(id.toString())
+}
+
+fun saveWiseSaying(saying: WiseSaying) {
+    // 폴더 생성 (없으면)
+    val dir = File("db/wiseSaying")
+    if (!dir.exists()) {
+        dir.mkdirs()
+    }
+
+    // 개별 파일로 저장
+    val json = """
+    {
+        "id": ${saying.id},
+        "content": "${saying.wiseSaying}",
+        "author": "${saying.author}"
+    }
+    """.trimIndent()
+
+    File("db/wiseSaying/${saying.id}.json").writeText(json)
+}
+
+fun loadAllWiseSayings(): MutableList<WiseSaying> {
+    val dir = File("db/wiseSaying")
+    if (!dir.exists()) return mutableListOf()
+
+    val sayings = mutableListOf<WiseSaying>()
+
+    dir.listFiles()?.filter { it.extension == "json" }?.forEach { file ->
+        try {
+            val content = file.readText()
+            val id = file.nameWithoutExtension.toInt()
+
+            // 간단한 JSON 파싱
+            val authorMatch = """"author":\s*"([^"]+)"""".toRegex().find(content)
+            val wiseSayingMatch = """"content":\s*"([^"]+)"""".toRegex().find(content)
+
+            if (authorMatch != null && wiseSayingMatch != null) {
+                val author = authorMatch.groupValues[1]
+                val wiseSaying = wiseSayingMatch.groupValues[1]
+                sayings.add(WiseSaying(id, author, wiseSaying))
+            }
+        } catch (e: Exception) {
+            println("파일 읽기 오류: ${file.name}")
+        }
+    }
+
+    return sayings.sortedBy { it.id }.toMutableList()
+}
+
+fun deleteWiseSaying(id: Int): Boolean {
+    val file = File("db/wiseSaying/${id}.json")
+    return if (file.exists()) {
+        file.delete()
+        true
+    } else {
+        false
+    }
 }
