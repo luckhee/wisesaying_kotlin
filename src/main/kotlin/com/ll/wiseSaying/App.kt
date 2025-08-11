@@ -1,4 +1,4 @@
-package com.ll.wiesSaying
+package com.ll.wiseSaying
 
 class App {
     val wiseSayingController = WiseSayingController()
@@ -18,6 +18,7 @@ class App {
                 wiseSayingController.actionWrite()
             } else if (cmd == "종료") {
                 systemController.actionExit()
+                break
             } else if (cmd == "목록") {
                 wiseSayingController.actionList()
             } else if (cmd.startsWith("삭제?id=")) {

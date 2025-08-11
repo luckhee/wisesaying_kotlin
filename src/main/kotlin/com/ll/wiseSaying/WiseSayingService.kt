@@ -1,4 +1,4 @@
-package com.ll.wiesSaying
+package com.ll.wiseSaying
 
 import java.io.File
 

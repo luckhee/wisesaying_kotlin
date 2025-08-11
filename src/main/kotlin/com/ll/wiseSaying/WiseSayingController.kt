@@ -1,4 +1,4 @@
-package com.ll.wiesSaying
+package com.ll.wiseSaying
 
 class WiseSayingController {
     val wiseSayingService = WiseSayingService()
@@ -49,7 +49,9 @@ class WiseSayingController {
             val result = wiseSayingService.updateWiseSaying(foundSaying, newWiseSaying, newAuthor)
             println(result)
         } else {
-            println("명언을 찾을 수 없습니다.")
+            val inputBits = cmd.split("=")
+            val id = inputBits[1].toIntOrNull() ?: 0
+            println("$id 번 명언은 존재하지 않습니다.")
         }
 
 
