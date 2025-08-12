@@ -46,6 +46,41 @@ class WiseSayingService {
         return wiseSayingRepository.sayings
     }
 
+    fun getPagedWiseSayings(page: Int, pageSize: Int = 5): Pair<List<WiseSaying>, Int> {
+        val allSayings = wiseSayingRepository.sayings.sortedByDescending { it.id }
+        val totalPages = (allSayings.size + pageSize - 1) / pageSize
+        val startIndex = (page - 1) * pageSize
+        val endIndex = minOf(startIndex + pageSize, allSayings.size)
+        
+        val pagedSayings = if (startIndex < allSayings.size) {
+            allSayings.subList(startIndex, endIndex)
+        } else {
+            emptyList()
+        }
+        
+        return Pair(pagedSayings, totalPages)
+    }
+
+    fun getPagedFilteredWiseSayings(cmd: CmdRequest, pageSize: Int = 5): Pair<List<WiseSaying>, Int> {
+        val filteredSayings = when (cmd.keywordType) {
+            "content" -> wiseSayingRepository.sayings.filter { it.wiseSaying.contains(cmd.keyword!!) }
+            "author" -> wiseSayingRepository.sayings.filter { it.author.contains(cmd.keyword!!) }
+            else -> wiseSayingRepository.sayings
+        }.sortedByDescending { it.id }
+        
+        val totalPages = (filteredSayings.size + pageSize - 1) / pageSize
+        val startIndex = (cmd.page - 1) * pageSize
+        val endIndex = minOf(startIndex + pageSize, filteredSayings.size)
+        
+        val pagedSayings = if (startIndex < filteredSayings.size) {
+            filteredSayings.subList(startIndex, endIndex)
+        } else {
+            emptyList()
+        }
+        
+        return Pair(pagedSayings, totalPages)
+    }
+
     fun buildData() {
         wiseSayingRepository.fileWiseSayingRepository.buildData(wiseSayingRepository.sayings)
     }

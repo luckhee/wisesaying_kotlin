@@ -21,31 +21,66 @@ class WiseSayingController {
 
     fun actionList(cmd : CmdRequest) {
         if(cmd.keyword == null && cmd.keywordType == null) {
+            // 일반 목록 페이징
+            val (pagedSayings, totalPages) = wiseSayingService.getPagedWiseSayings(cmd.page)
+
             println("번호 / 작가 / 명언")
             println("----------------------")
-            val saings = wiseSayingService.actionList()
-            for (saying in saings.reversed()) {
+
+            for (saying in pagedSayings) {
                 println("${saying.id} / ${saying.author} / ${saying.wiseSaying}")
             }
 
+            println("----------------------")
+            
+            // 페이지 네비게이션 생성
+            val pageNavigation = buildString {
+                for (i in 1..totalPages) {
+                    if (i == cmd.page) {
+                        append("[$i]")
+                    } else {
+                        append(i)
+                    }
+                    if (i < totalPages) {
+                        append(" / ")
+                    }
+                }
+            }
+            println("페이지 : $pageNavigation")
         } else {
-            val filteredWiseSaying = wiseSayingService.filterWiseSaying(cmd)
+            // 검색 결과 페이징
+            val (pagedSayings, totalPages) = wiseSayingService.getPagedFilteredWiseSayings(cmd)
+            if(cmd.keyword != null && cmd.keywordType != null){
+                println("----------------------")
+                println("검색타입 : ${cmd.keywordType}")
+                println("검색어 : ${cmd.keyword}")
+                println("----------------------")
+            }
 
-            println("----------------------")
-            println("검색타입 : ${cmd.keywordType}")
-            println("검색어 : ${cmd.keyword}")
-            println("----------------------")
             println("번호 / 작가 / 명언")
             println("----------------------")
-            for (saying in filteredWiseSaying.reversed()) {
 
+            for (saying in pagedSayings) {
                 println("${saying.id} / ${saying.author} / ${saying.wiseSaying}")
             }
+
+            println("----------------------")
+            
+            // 페이지 네비게이션 생성
+            val pageNavigation = buildString {
+                for (i in 1..totalPages) {
+                    if (i == cmd.page) {
+                        append("[$i]")
+                    } else {
+                        append(i)
+                    }
+                    if (i < totalPages) {
+                        append(" / ")
+                    }
+                }
+            }
+            println("페이지 : $pageNavigation")
         }
-
-
-
-
     }
 
     fun actionDelete(cmd: CmdRequest) {

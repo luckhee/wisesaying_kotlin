@@ -3,36 +3,37 @@ package com.ll.wiseSaying.global
 import com.ll.wiseSaying.dto.CmdRequest
 
 class CmdTokenizer {
-    //목록?keywordType=content&keyword=과거
+    //목록?page=2
     fun splitCommand(cmd : String) : CmdRequest{
         return if (!cmd.contains("?")) {
             CmdRequest( cmd)
         } else {
-            //삭제?id=1
             val inputBits = cmd.split("?")
             val command = inputBits[0]
-            val searchBit = inputBits[1] // keywordType=content&keyword=과거 id = 1
+            val searchBit = inputBits[1]
 
             var keywordType: String? = null
             var keyword: String? = null
             var id: Int? = 0
-            try{
-            val searchBits = searchBit.split("&")
+            var page: Int = 1
 
-            keywordType = findKeyWordType(searchBits)
-            keyword = findKeyWord(searchBits)
+            try{
+                val searchBits = searchBit.split("&")
+
+                keywordType = findKeyWordType(searchBits)
+                keyword = findKeyWord(searchBits)
+
             } catch (e: Exception) {
+                // 단일 파라미터 처리 (id=1 또는 page=1)
                 val searchBits = searchBit.split("=")
-                id = searchBits[1].toInt()
+                if (searchBits[0] == "id") {
+                    id = searchBits[1].toInt()
+                } else if (searchBits[0] == "page") {
+                    page = searchBits[1].toIntOrNull() ?: 1
+                }
             }
 
-
-            CmdRequest(
-                command,
-                keywordType,
-                keyword,
-                id
-            )
+            CmdRequest(command, keywordType, keyword, id, page)
         }
     }
 
