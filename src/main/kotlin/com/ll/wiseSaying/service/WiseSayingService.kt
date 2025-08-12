@@ -1,6 +1,7 @@
 package com.ll.wiseSaying.service
 
-import com.ll.wiseSaying.WiseSaying
+import com.ll.wiseSaying.dto.CmdRequest
+import com.ll.wiseSaying.global.WiseSaying
 import com.ll.wiseSaying.repository.WiseSayingRepository
 import java.io.File
 
@@ -23,28 +24,25 @@ class WiseSayingService {
         return answer
     }
 
-    fun deleteWiseSaying(cmd : String) : String {
-        val inputBits = cmd.split("=")
-        val idToDelete = inputBits[1].toIntOrNull()
+    fun deleteWiseSaying(cmd : CmdRequest) : String {
+
         var answer = "";
-        if(idToDelete != null) {
-            val found = sayings.any { it.id == idToDelete }
+        if(cmd.id != null) {
+            val found = sayings.any { it.id == cmd.id }
 
             if(found) {
-                sayings.removeIf { it.id == idToDelete }
-                wiseSayingRepository.deleteWiseSaying(idToDelete)
-                answer = "${idToDelete}번 명언이 삭제되었습니다."
+                sayings.removeIf { it.id == cmd.id }
+                wiseSayingRepository.deleteWiseSaying(cmd.id)
+                answer = "${cmd.id}번 명언이 삭제되었습니다."
             } else {
-                answer = ("${idToDelete}번 명언은 존재하지 않습니다.")
+                answer = ("${cmd.id}번 명언은 존재하지 않습니다.")
             }
         }
         return answer
     }
 
-    fun getWiseSayingForModify(cmd: String): WiseSaying? {
-        val inputBits = cmd.split("=")
-        val idToModify = inputBits[1].toIntOrNull() ?: return null
-        return sayings.find { it.id == idToModify }
+    fun getWiseSayingForModify(cmd: CmdRequest): WiseSaying? {
+        return sayings.find { it.id == cmd.id}
     }
 
     fun updateWiseSaying(saying: WiseSaying, newWiseSaying: String, newAuthor: String): String {
@@ -80,48 +78,16 @@ class WiseSayingService {
         println("data.json 파일의 내용이 갱신되었습니다.")
     }
 
-    fun hasCmdParameter(cmd : String ) : Boolean{
-        if(cmd.contains("?")) return true
-        else return false
-    }
     //목록?keywordType=content&keyword=과거
-    fun splitCmd(cmd : String):MutableList<WiseSaying> {
-        val inputBits = cmd.split("?")
-        val searchBit = inputBits[1]
-        //keywordType=content
-        val searchBits = searchBit.split("&")
+    fun filterWiseSaying(cmd : CmdRequest):MutableList<WiseSaying> {
 
-        val keyWordType = findKeyWordType(searchBits)
-        val keyWord = findKeyWord(searchBits)
+        return if(cmd.keywordType == "content") {
 
-        // Service에 있는게 좀 ... 애매하네요... controller로 빼고 싶어서 메소드로 분리해봤는데 매개변수 때문에 호출이 안되네요.. 설계를 잘못한듯 ..
-        println("----------------------")
-        println("검색타입 : $keyWordType")
-        println("검색어 : $keyWord")
-        println("----------------------")
-
-
-        return if(keyWordType == "content") {
-
-            sayings.filter{it.wiseSaying.contains(keyWord)}.toMutableList()
-        } else if(keyWordType == "author") {
-            sayings.filter{it.author.contains(keyWord)}.toMutableList()
+            sayings.filter{it.wiseSaying.contains(cmd.keyword!!)}.toMutableList()
+        } else if(cmd.keywordType == "author") {
+            sayings.filter{it.author.contains(cmd.keyword!!)}.toMutableList()
         } else {
             sayings.toMutableList()
         }
-    }
-
-    fun findKeyWordType(searchBits : List<String>) : String{
-        val keyWordTypeBit = searchBits[0]
-        val keyWordTypeBits =  keyWordTypeBit.split("=")
-        val keyWordType =keyWordTypeBits[1]
-        return keyWordType
-    }
-
-    fun findKeyWord(searchBits : List<String>) : String {
-        val keyWordBit = searchBits[1]
-        val keyWordBits = keyWordBit.split("=")
-        val keyWord = keyWordBits[1]
-        return keyWord
     }
 }

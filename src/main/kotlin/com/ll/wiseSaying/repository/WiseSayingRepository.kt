@@ -1,6 +1,6 @@
 package com.ll.wiseSaying.repository
 
-import com.ll.wiseSaying.WiseSaying
+import com.ll.wiseSaying.global.WiseSaying
 import java.io.File
 
 class WiseSayingRepository{
