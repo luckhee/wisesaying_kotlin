@@ -4,23 +4,19 @@ import com.ll.wiseSaying.global.WiseSaying
 import java.io.File
 
 class WiseSayingRepository{
-    fun saveWiseSaying(saying: WiseSaying) {
-        // 폴더 생성 (없으면)
-        val dir = File("db/wiseSaying")
-        if (!dir.exists()) {
-            dir.mkdirs()
-        }
+    val sayings = loadAllWiseSayings()
+    var id = sayings.maxOfOrNull { it.id } ?: 0
+    var fileWiseSayingRepository = FileWiseSayingRepository()
 
-        // 개별 파일로 저장
-        val json = """
-    {
-        "id": ${saying.id},
-        "content": "${saying.wiseSaying}",
-        "author": "${saying.author}"
+    fun updateWiseSaying(saying : WiseSaying) {
+        fileWiseSayingRepository.writeToFile(saying)
     }
-    """.trimIndent()
 
-        File("db/wiseSaying/${saying.id}.json").writeText(json)
+    fun saveWiseSaying(author : String, wiseSaying : String) {
+        id+=1
+        val newSaying = WiseSaying(id, author, wiseSaying)
+        sayings.add(newSaying)
+        fileWiseSayingRepository.writeToFile(newSaying)
     }
 
     fun loadAllWiseSayings(): MutableList<WiseSaying> {
@@ -51,13 +47,14 @@ class WiseSayingRepository{
         return sayings.sortedBy { it.id }.toMutableList()
     }
 
-    fun saveLastId(id : Int) {
+    fun saveLastId() :String {
         val dir = File("db/wiseSaying")
         if (!dir.exists()) {
             dir.mkdirs()
         }
 
         File("db/wiseSaying/lastId.txt").writeText(id.toString())
+        return "$id 번 명언이 등록되었습니다."
     }
 
     fun deleteWiseSaying(id: Int): Boolean {
